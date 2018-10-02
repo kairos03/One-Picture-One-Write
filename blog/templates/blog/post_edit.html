@@ -2,8 +2,28 @@
 
 {% block content %}
     <h1>New post</h1>
-    <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
+    <form method="POST" class="post-form" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field.errors }}
+            {{ hidden_field }}
+        {% endfor %}
+
+        <div class="content">
+            <div class="title"> 
+                {{ form.title.label_tag }} {{form.title}}
+            </div>
+            <div class="image">
+                <input id='id_image' type="file", class="" name="image">
+            </div>
+            <div class="main-content">
+                {{ form.text.label_tag}} {{ form.text }}
+            </div>
+        </div> 
+        
         <button type="submit" class="save btn btn-default">SAVE</button>
     </form>
 {% endblock content %}
