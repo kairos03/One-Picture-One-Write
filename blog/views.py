@@ -1,6 +1,6 @@
 import os
 
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.utils import timezone
 
 from .models import Post
@@ -21,7 +21,6 @@ def post_new(request):
             post = form.save(commit=False)
             post.image = form.cleaned_data['image']
             post.author = request.user
-            post.published_date = timezone.now()
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -39,12 +38,24 @@ def post_edit(request, pk):
             post = form.save(commit=False)
             post.image = form.cleaned_data['image']
             post.author = request.user
-            post.published_date = timezone.now()
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'blog/post_edit.html', {'form': form})\
+
+def post_draft_list(request):
+    posts = Post.objects.filter(published_date__isnull=True).order_by('created_date')
+    return render(request, 'blog/post_draft_list.html', {'posts': posts})
+
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.user == post.author:
+        post.delete()
+    else:
+        # TODO if user is not vaild show error message
+        pass
+    return redirect('post_list')
 
 def _delete_file(path):
     if os.path.isfile(path):

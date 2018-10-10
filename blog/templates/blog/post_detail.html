@@ -1,6 +1,9 @@
 {% extends 'blog/base.html' %}
+{% load staticfiles%}
 
 {% block content %}
+    <script type="text/javascript" src="{% static 'js/post_detail.js' %}"></script>
+
     <div class="post">
         {% if post.published_date %}
             <div class="date">
@@ -9,6 +12,7 @@
         {% endif %}
         {% if user.is_authenticated %}
             <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a class="btn btn-default" onclick="delete_check('{{ post.pk }}');"><span class="glyphicon glyphicon-trash"></span></a>
         {% endif %}
         <h1> {{ post.title }} </h1>
         <p> <img src="{{ post.image.url }}" alt='upload-image' width="100%"></p>
